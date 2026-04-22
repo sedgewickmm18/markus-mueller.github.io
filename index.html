@@ -398,20 +398,19 @@
 						<h2>Appendix</h2>
 						<p style="font-size: 0.8em;">Workflow Sequence Diagrams</p>
 						<p style="font-size: 0.65em; margin-top: 1em; color: #999;">
-							&darr; Navigate down for the sequence diagram
+							&darr; Navigate down for individual diagrams
 						</p>
 					</section>
 
-					<!-- Mermaid Sequence Diagram -->
+					<!-- Diagram 1: Explicit Prompting -->
 					<section>
-						<h3>Workflow Sequence Diagram</h3>
+						<h3>Explicit Prompting &mdash; Sequence</h3>
 						<div class="mermaid" style="font-size: 0.6em; text-align: center;">
 sequenceDiagram
     participant U as User
     participant C as MCP Client
     participant S as MCP Server
 
-    rect rgba(79, 195, 247, 0.1)
     Note over U,S: Method 1: Explicit Prompting
     U->>C: "List open PRs"
     C->>S: list_pull_requests(state="open")
@@ -420,9 +419,18 @@ sequenceDiagram
     U->>C: Selects PR #101
     C->>S: get_pull_request(id=101)
     S-->>C: Returns PR details
-    end
+						</div>
+					</section>
 
-    rect rgba(255, 183, 77, 0.1)
+					<!-- Diagram 2: MCP Elicitation -->
+					<section>
+						<h3>MCP Elicitation &mdash; Sequence</h3>
+						<div class="mermaid" style="font-size: 0.6em; text-align: center;">
+sequenceDiagram
+    participant U as User
+    participant C as MCP Client
+    participant S as MCP Server
+
     Note over U,S: Method 2: MCP Elicitation
     U->>C: "Delete staging database"
     C->>S: delete_database(env="staging")
@@ -431,38 +439,7 @@ sequenceDiagram
     U->>C: Confirms
     C->>S: Submit elicitation response
     S-->>C: Returns success / error
-    end
 						</div>
-					</section>
-
-					<!-- Text-based sequence diagram fallback -->
-					<section>
-						<h3>Sequence Diagram (Text)</h3>
-						<pre><code class="hljs" data-trim style="font-size: 0.55em;">
-Method 1: Explicit Prompting
-─────────────────────────────────────────
-User     MCP Client        MCP Server
-  │          │                  │
-  │─"List PRs"─▶│              │
-  │          │──list_prs()───▶│
-  │          │◀─[{101},{102}]─│
-  │◀─"Pick one"─│             │
-  │──"PR #101"─▶│             │
-  │          │──get_pr(101)──▶│
-  │          │◀──PR details───│
-
-Method 2: MCP Elicitation
-─────────────────────────────────────────
-User     MCP Client        MCP Server
-  │          │                  │
-  │─"Delete DB"─▶│             │
-  │          │─delete_db()───▶│
-  │          │◀─Elicitation───│
-  │◀─"Confirm?"──│             │
-  │──"Yes"──▶│                  │
-  │          │──response──────▶│
-  │          │◀───success─────│
-						</code></pre>
 					</section>
 				</section>
 
