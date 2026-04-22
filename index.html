@@ -1,138 +1,518 @@
-<div class="reveal">
-  <div class="slides">
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<title>Human-in-the-Loop in MCP Scenarios</title>
+		<meta name="description" content="When MCP tools need additional information from the user" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <!-- Title Slide -->
-    <section>
-      <h1>MCP Human in the Loop</h1>
-      <p>Architectural Patterns for User Intervention</p>
-    </section>
+		<link rel="stylesheet" href="dist/reset.css" />
+		<link rel="stylesheet" href="dist/reveal.css" />
+		<link rel="stylesheet" href="dist/theme/black.css" id="theme" />
+		<link rel="stylesheet" href="dist/plugin/highlight/monokai.css" />
 
-    <!-- Alternatives Overview -->
-    <section>
-      <h2>Implementation Alternatives</h2>
-      <ol>
-        <li><strong>Explicit Prompting</strong> (User-Initiated)</li>
-        <li><strong>MCP Elicitation</strong> (Server-Initiated)</li>
-      </ol>
-    </section>
+		<style>
+			.reveal section img.emoji {
+				background: none;
+				border: none;
+				box-shadow: none;
+				height: 1.2em;
+				vertical-align: middle;
+			}
+			.reveal .pros-cons th {
+				text-align: center;
+				padding: 0.4em 0.8em;
+			}
+			.reveal .pros-cons td {
+				padding: 0.3em 0.6em;
+				font-size: 0.75em;
+			}
+			.reveal .pros-cons tr:nth-child(odd) {
+				background: rgba(255,255,255,0.05);
+			}
+			.reveal .callout {
+				background: rgba(255, 165, 0, 0.15);
+				border-left: 4px solid orange;
+				padding: 0.8em 1em;
+				margin: 1em 0;
+				text-align: left;
+				font-size: 0.8em;
+			}
+			.reveal .scenario-box {
+				background: rgba(100, 200, 255, 0.1);
+				border: 1px solid rgba(100, 200, 255, 0.3);
+				border-radius: 8px;
+				padding: 1em 1.2em;
+				margin: 0.8em 0;
+				text-align: left;
+				font-size: 0.75em;
+			}
+			.reveal .green { color: #4CAF50; }
+			.reveal .red { color: #f44336; }
+		</style>
+	</head>
 
-    <!-- Explicit Prompting Section -->
-    <section>
-      <section>
-        <h2>1. Explicit Prompting</h2>
-        <p><em>User-Initiated Control</em></p>
-        <p>The server returns broad results; the user decides how to narrow them down.</p>
-      </section>
-      <section>
-        <h3>Workflow & Logic</h3>
-        <ul>
-          <li><strong>Workflow:</strong> Server lists all options (files, PRs, etc.)</li>
-          <li><strong>User Action:</strong> Client renders list; user clicks a selection</li>
-          <li><strong>Decision:</strong> Responsibility lies with the client/user, not the model</li>
-        </ul>
-      </section>
-      <section>
-        <h3>Key Details</h3>
-        <ul>
-          <li><strong>Use Case:</strong> Selecting a file, choosing a branch, or picking a team member</li>
-          <li><strong>Advantage:</strong> Zero ambiguity. Works with <strong>any</strong> MCP client</li>
-        </ul>
-      </section>
-    </section>
+	<body>
+		<div class="reveal">
+			<div class="slides">
 
-    <!-- MCP Elicitation Section -->
-    <section>
-      <section>
-        <h2>2. MCP Elicitation</h2>
-        <p><em>Server-Initiated Pausing</em></p>
-        <p>The server pauses execution to request missing parameters or approvals.</p>
-      </section>
-      <section>
-        <h3>Workflow & Logic</h3>
-        <ul>
-          <li><strong>Workflow:</strong> Server identifies missing data and sends a JSON schema request</li>
-          <li><strong>User Action:</strong> Client renders a dynamic form or confirmation dialog</li>
-          <li><strong>Decision:</strong> Server manages state; user provides validation</li>
-        </ul>
-      </section>
-      <section>
-        <h3>Key Details</h3>
-        <ul>
-          <li><strong>Use Case:</strong> Confirming "delete," prompting for branch names, or requesting API keys</li>
-          <li><strong>Advantage:</strong> Maintains context in complex, multi-step workflows</li>
-        </ul>
-      </section>
-      <section>
-        <h3>⚠️ Support Caveat</h3>
-        <p>Currently limited to:</p>
-        <small>
-          Visual Studio Code (Copilot) | VS 2026 | Claude Desktop | Claude Code | Cursor | MCPJam | Goose
-        </small>
-      </section>
-    </section>
+				<!-- ============================================================ -->
+				<!-- TITLE SLIDE -->
+				<!-- ============================================================ -->
+				<section>
+					<h1>Human-in-the-Loop</h1>
+					<h3>in MCP Scenarios</h3>
+					<p style="margin-top: 1.5em;">
+						<em>When tools need additional information from the user</em>
+					</p>
+					<p style="margin-top: 2em; font-size: 0.6em; color: #888;">
+						Model Context Protocol &mdash; Architectural Patterns for User Intervention
+					</p>
+				</section>
 
-    <!-- Comparison Table -->
-    <section>
-      <h2>Feature Comparison</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Feature</th>
-            <th>Explicit Prompting</th>
-            <th>MCP Elicitation</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Trigger</td>
-            <td>User/Client initiates</td>
-            <td>Server pauses</td>
-          </tr>
-          <tr>
-            <td>UX</td>
-            <td>List Selection</td>
-            <td>Modal / Form</td>
-          </tr>
-          <tr>
-            <td>Data Flow</td>
-            <td>Passive Retrieval</td>
-            <td>Active Input</td>
-          </tr>
-        </tbody>
-      </table>
-    </section>
+				<!-- ============================================================ -->
+				<!-- MOTIVATING EXAMPLE -->
+				<!-- ============================================================ -->
+				<section>
+					<h2>Why Do We Need Human Input?</h2>
+					<div class="callout">
+						<strong>Scenario:</strong> An AI assistant is asked to<br>
+						<code>"Clean up old branches in the repository"</code><br><br>
+						Before deleting anything, it needs to know:<br>
+						&bull; <strong>Which branches?</strong> &mdash; merged only, or stale too?<br>
+						&bull; <strong>How old is "old"?</strong> &mdash; 30 days? 90 days?<br>
+						&bull; <strong>Confirmation</strong> &mdash; some branches may still be in use
+					</div>
+					<p class="fragment" style="font-size: 0.8em;">
+						Without human input, the tool either <span class="red">guesses wrong</span>
+						or <span class="red">refuses to act</span>.
+					</p>
+					<p class="fragment" style="font-size: 0.8em;">
+						MCP provides <strong>two patterns</strong> to solve this.
+					</p>
+				</section>
 
-    <!-- Visual Example -->
-    <section>
-      <h3>Elicitation in Action</h3>
-      <img src="https://github.ibm.com/user-attachments/assets/80bf94d2-b2bc-4679-b324-b877b74b7fd9" alt="Elicitation Example" style="max-height: 500px;">
-    </section>
+				<!-- ============================================================ -->
+				<!-- TWO APPROACHES OVERVIEW -->
+				<!-- ============================================================ -->
+				<section>
+					<h2>Two Approaches</h2>
+					<table style="font-size: 0.75em;">
+						<thead>
+							<tr>
+								<th></th>
+								<th style="color: #4FC3F7;">Explicit Prompting</th>
+								<th style="color: #FFB74D;">MCP Elicitation</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td><strong>Who initiates?</strong></td>
+								<td>User / Client</td>
+								<td>Server</td>
+							</tr>
+							<tr>
+								<td><strong>Pattern</strong></td>
+								<td>Server returns options → user picks</td>
+								<td>Server pauses → asks for input</td>
+							</tr>
+							<tr>
+								<td><strong>UX</strong></td>
+								<td>List / Menu selection</td>
+								<td>Modal / Dynamic form</td>
+							</tr>
+						</tbody>
+					</table>
+					<p style="font-size: 0.65em; margin-top: 1.5em; color: #999;">
+						Use the arrow keys to navigate. Down arrows dive into details.
+					</p>
+				</section>
 
-    <!-- Sequence Diagram -->
-    <section>
-      <h3>Workflow Sequence</h3>
-      <pre><code class="language-mermaid">
+				<!-- ============================================================ -->
+				<!-- EXPLICIT PROMPTING -->
+				<!-- ============================================================ -->
+				<section>
+					<!-- Overview -->
+					<section>
+						<h2><span style="color: #4FC3F7;">1.</span> Explicit Prompting</h2>
+						<p><em>User-Initiated Control</em></p>
+						<p style="font-size: 0.8em;">
+							The server returns <strong>broad results</strong>; the user decides
+							how to narrow them down.
+						</p>
+						<p style="font-size: 0.7em; margin-top: 1em;">
+							&darr; See it in action
+						</p>
+					</section>
+
+					<!-- Example: List PRs -->
+					<section>
+						<h3>Example: Reviewing Pull Requests</h3>
+						<div class="scenario-box">
+							<strong>User says:</strong> <code>"Show me the open PRs"</code><br><br>
+							<strong>Tool call:</strong><br>
+							<pre><code class="hljs json" data-trim style="font-size: 0.65em;">
+{
+  "method": "tools/call",
+  "params": {
+    "name": "list_pull_requests",
+    "arguments": { "state": "open" }
+  }
+}
+							</code></pre>
+							<strong>Server returns all open PRs:</strong><br>
+							<pre><code class="hljs json" data-trim style="font-size: 0.65em;">
+{
+  "content": [
+    { "id": 101, "title": "Fix login bug", "author": "alice" },
+    { "id": 102, "title": "Add dark mode",  "author": "bob"   },
+    { "id": 103, "title": "Update README",  "author": "carol" }
+  ]
+}
+							</code></pre>
+							<strong>Client renders list &rarr; User clicks PR #101</strong>
+						</div>
+						<p style="font-size: 0.7em;">
+							<span class="green">&#10003;</span> Zero ambiguity &bull;
+							<span class="green">&#10003;</span> Works with <strong>any</strong> MCP client
+						</p>
+					</section>
+
+					<!-- Key Characteristics -->
+					<section>
+						<h3>Explicit Prompting &mdash; Key Points</h3>
+						<ul style="font-size: 0.8em;">
+							<li><strong>Use cases:</strong> selecting files, picking branches, choosing team members</li>
+							<li><strong>Workflow:</strong> Server lists all options &rarr; Client renders UI &rarr; User selects</li>
+							<li><strong>Decision responsibility:</strong> lies with the <em>client/user</em>, not the model</li>
+							<li><strong>Advantage:</strong> Universal compatibility &mdash; every MCP client can render a list</li>
+							<li><strong>Limitation:</strong> Cannot prompt for data the server hasn't thought of in advance</li>
+						</ul>
+					</section>
+				</section>
+
+				<!-- ============================================================ -->
+				<!-- MCP ELICITATION -->
+				<!-- ============================================================ -->
+				<section>
+					<!-- Overview -->
+					<section>
+						<h2><span style="color: #FFB74D;">2.</span> MCP Elicitation</h2>
+						<p><em>Server-Initiated Pausing</em></p>
+						<p style="font-size: 0.8em;">
+							The server <strong>pauses execution</strong> to request missing
+							parameters or user approvals via a JSON Schema form.
+						</p>
+						<p style="font-size: 0.7em; margin-top: 1em;">
+							&darr; See meaningful examples
+						</p>
+					</section>
+
+					<!-- Example 1: Delete Confirmation -->
+					<section>
+						<h3>Example 1: Destructive Action Confirmation</h3>
+						<div class="scenario-box">
+							<strong>User says:</strong> <code>"Delete the staging database"</code><br><br>
+							<strong>Tool call:</strong><br>
+							<pre><code class="hljs json" data-trim style="font-size: 0.65em;">
+{
+  "method": "tools/call",
+  "params": {
+    "name": "delete_database",
+    "arguments": { "environment": "staging" }
+  }
+}
+							</code></pre>
+							<strong>Server pauses & sends elicitation request:</strong><br>
+							<pre><code class="hljs json" data-trim style="font-size: 0.65em;">
+{
+  "type": "elicitation",
+  "title": "Confirm Database Deletion",
+  "message": "This will permanently delete the staging database.",
+  "requestedSchema": {
+    "type": "object",
+    "properties": {
+      "confirm": {
+        "type": "boolean",
+        "description": "Type 'yes' to confirm"
+      }
+    },
+    "required": ["confirm"]
+  }
+}
+							</code></pre>
+							<strong>Client shows modal &rarr; User clicks "Confirm"</strong>
+						</div>
+					</section>
+
+					<!-- Example 2: Missing Parameter -->
+					<section>
+						<h3>Example 2: Missing Required Parameter</h3>
+						<div class="scenario-box">
+							<strong>User says:</strong> <code>"Deploy to production"</code><br><br>
+							<strong>Tool call:</strong><br>
+							<pre><code class="hljs json" data-trim style="font-size: 0.65em;">
+{
+  "method": "tools/call",
+  "params": {
+    "name": "deploy",
+    "arguments": { "target": "production" }
+  }
+}
+							</code></pre>
+							<strong>Server needs the branch name & asks via elicitation:</strong><br>
+							<pre><code class="hljs json" data-trim style="font-size: 0.65em;">
+{
+  "type": "elicitation",
+  "title": "Deployment Details",
+  "message": "Which branch should be deployed?",
+  "requestedSchema": {
+    "type": "object",
+    "properties": {
+      "branch": {
+        "type": "string",
+        "enum": ["main", "release/v2.1", "hotfix/auth-fix"],
+        "description": "Select branch to deploy"
+      },
+      "rollback_on_failure": {
+        "type": "boolean",
+        "default": true,
+        "description": "Auto-rollback on failure?"
+      }
+    },
+    "required": ["branch"]
+  }
+}
+							</code></pre>
+							<strong>Client renders form &rarr; User selects branch & confirms</strong>
+						</div>
+					</section>
+
+					<!-- Key Characteristics -->
+					<section>
+						<h3>Elicitation &mdash; Key Points</h3>
+						<ul style="font-size: 0.8em;">
+							<li><strong>Use cases:</strong> confirming deletes, requesting branch names, entering API keys, approval workflows</li>
+							<li><strong>Workflow:</strong> Server identifies missing data &rarr; Sends JSON Schema &rarr; Client renders form &rarr; User fills in</li>
+							<li><strong>Decision responsibility:</strong> Server manages state; user provides validation</li>
+							<li><strong>Advantage:</strong> Maintains context in complex multi-step workflows</li>
+							<li><strong>Schema-driven:</strong> Supports text, boolean, enum, and nested objects</li>
+						</ul>
+					</section>
+
+					<!-- Support Caveat -->
+					<section>
+						<h3>&#9888;&#65039; Client Support</h3>
+						<p style="font-size: 0.8em;">MCP Elicitation is a newer capability. Currently supported by:</p>
+						<ul style="font-size: 0.7em;">
+							<li>Visual Studio Code (Copilot)</li>
+							<li>VS 2026</li>
+							<li>Claude Desktop</li>
+							<li>Claude Code</li>
+							<li>Cursor</li>
+							<li>MCPJam</li>
+							<li>Goose</li>
+						</ul>
+						<p style="font-size: 0.65em; color: #999; margin-top: 1em;">
+							Explicit Prompting works with <strong>all</strong> MCP clients by contrast.
+						</p>
+					</section>
+				</section>
+
+				<!-- ============================================================ -->
+				<!-- PROS & CONS TABLE -->
+				<!-- ============================================================ -->
+				<section>
+					<h2>Pros & Cons Comparison</h2>
+					<table class="pros-cons" style="font-size: 0.7em;">
+						<thead>
+							<tr>
+								<th>Aspect</th>
+								<th style="color: #4FC3F7;">Explicit Prompting</th>
+								<th style="color: #FFB74D;">MCP Elicitation</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td><strong>Trigger</strong></td>
+								<td><span class="green">+</span> User / Client initiates</td>
+								<td><span class="green">+</span> Server initiates when needed</td>
+							</tr>
+							<tr>
+								<td><strong>UX Pattern</strong></td>
+								<td><span class="green">+</span> List / Menu selection</td>
+								<td><span class="green">+</span> Modal / Dynamic form</td>
+							</tr>
+							<tr>
+								<td><strong>Ambiguity</strong></td>
+								<td><span class="green">+</span> Low &mdash; user sees all options</td>
+								<td><span class="green">+</span> Low &mdash; schema constrains input</td>
+							</tr>
+							<tr>
+								<td><strong>Client Compat.</strong></td>
+								<td><span class="green">+</span> Works with <em>every</em> MCP client</td>
+								<td><span class="red">&ndash;</span> Requires elicitation-capable client</td>
+							</tr>
+							<tr>
+								<td><strong>Multi-step Flows</strong></td>
+								<td><span class="red">&ndash;</span> User must drive each step</td>
+								<td><span class="green">+</span> Server orchestrates automatically</td>
+							</tr>
+							<tr>
+								<td><strong>Flexibility</strong></td>
+								<td><span class="red">&ndash;</span> Limited to pre-defined options</td>
+								<td><span class="green">+</span> Schema allows rich input types</td>
+							</tr>
+							<tr>
+								<td><strong>Implementation</strong></td>
+								<td><span class="green">+</span> Simple &mdash; just return data</td>
+								<td><span class="red">&ndash;</span> More complex server-side state</td>
+							</tr>
+							<tr>
+								<td><strong>Safety</strong></td>
+								<td><span class="green">+</span> User explicitly chooses</td>
+								<td><span class="green">+</span> Server enforces confirmation</td>
+							</tr>
+						</tbody>
+					</table>
+				</section>
+
+				<!-- ============================================================ -->
+				<!-- CONCLUSION -->
+				<!-- ============================================================ -->
+				<section>
+					<h2>Key Takeaways</h2>
+					<ul style="font-size: 0.8em;">
+						<li class="fragment"><strong>Start with Explicit Prompting</strong> &mdash; it's universal and simple</li>
+						<li class="fragment"><strong>Add Elicitation</strong> when you need dynamic forms, confirmations, or multi-step workflows</li>
+						<li class="fragment"><strong>Both patterns complement each other</strong> &mdash; use the right tool for the job</li>
+						<li class="fragment"><strong>Safety first:</strong> human-in-the-loop prevents costly mistakes in automated tool chains</li>
+					</ul>
+				</section>
+
+				<!-- ============================================================ -->
+				<!-- APPENDIX -->
+				<!-- ============================================================ -->
+				<section>
+					<section>
+						<h2>Appendix</h2>
+						<p style="font-size: 0.8em;">Workflow Sequence Diagrams</p>
+						<p style="font-size: 0.65em; margin-top: 1em; color: #999;">
+							&darr; Navigate down for the sequence diagram
+						</p>
+					</section>
+
+					<!-- Mermaid Sequence Diagram -->
+					<section>
+						<h3>Workflow Sequence Diagram</h3>
+						<div class="mermaid" style="font-size: 0.6em; text-align: center;">
 sequenceDiagram
     participant U as User
     participant C as MCP Client
     participant S as MCP Server
 
+    rect rgba(79, 195, 247, 0.1)
     Note over U,S: Method 1: Explicit Prompting
-    U->>C: "List PRs"
-    C->>S: list_prs()
-    S-->>C: Returns all PRs
-    C->>U: "Click one to review"
-    
+    U->>C: "List open PRs"
+    C->>S: list_pull_requests(state="open")
+    S-->>C: Returns all PRs [{id: 101, ...}, ...]
+    C->>U: Renders list for selection
+    U->>C: Selects PR #101
+    C->>S: get_pull_request(id=101)
+    S-->>C: Returns PR details
+    end
+
+    rect rgba(255, 183, 77, 0.1)
     Note over U,S: Method 2: MCP Elicitation
-    U->>C: "Merge PR #101"
-    C->>S: merge_pr(id=101)
-    S-->>C: Request Elicitation (Form)
-    C->>U: Show Modal: "Confirm Merge?"
-    U->>C: Approve
-    C->>S: Submit Response
-      </code></pre>
-    </section>
+    U->>C: "Delete staging database"
+    C->>S: delete_database(env="staging")
+    S-->>C: Elicitation Request (JSON Schema)
+    C->>U: Shows modal: "Confirm Deletion?"
+    U->>C: Confirms
+    C->>S: Submit elicitation response
+    S-->>C: Returns success / error
+    end
+						</div>
+					</section>
 
-  </div>
-</div>
+					<!-- Text-based sequence diagram fallback -->
+					<section>
+						<h3>Sequence Diagram (Text)</h3>
+						<pre><code class="hljs" data-trim style="font-size: 0.55em;">
+Method 1: Explicit Prompting
+─────────────────────────────────────────
+User     MCP Client        MCP Server
+  │          │                  │
+  │─"List PRs"─▶│              │
+  │          │──list_prs()───▶│
+  │          │◀─[{101},{102}]─│
+  │◀─"Pick one"─│             │
+  │──"PR #101"─▶│             │
+  │          │──get_pr(101)──▶│
+  │          │◀──PR details───│
 
+Method 2: MCP Elicitation
+─────────────────────────────────────────
+User     MCP Client        MCP Server
+  │          │                  │
+  │─"Delete DB"─▶│             │
+  │          │─delete_db()───▶│
+  │          │◀─Elicitation───│
+  │◀─"Confirm?"──│             │
+  │──"Yes"──▶│                  │
+  │          │──response──────▶│
+  │          │◀───success─────│
+						</code></pre>
+					</section>
+				</section>
+
+			</div>
+		</div>
+
+		<script src="dist/reveal.js"></script>
+		<script src="dist/plugin/highlight.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+		<script>
+			// Initialize Mermaid before Reveal.js so diagrams render correctly
+			mermaid.initialize({
+				startOnLoad: false,
+				theme: 'dark',
+				themeVariables: {
+					fontSize: '16px'
+				},
+				sequence: {
+					actorMargin: 80,
+					messageMargin: 40
+				}
+			});
+
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				center: true,
+				hash: true,
+				slideNumber: true,
+				plugins: [RevealHighlight],
+				transition: 'slide'
+			});
+
+			// Render Mermaid diagrams after Reveal is ready
+			Reveal.on('ready', async function() {
+				const mermaidDivs = document.querySelectorAll('.mermaid');
+				for (let i = 0; i < mermaidDivs.length; i++) {
+					const el = mermaidDivs[i];
+					const graphDef = el.textContent.trim();
+					const id = 'mermaid-' + i;
+					try {
+						const { svg } = await mermaid.render(id, graphDef);
+						el.innerHTML = svg;
+					} catch (e) {
+						console.warn('Mermaid render error:', e);
+					}
+				}
+				// Force Reveal to recalculate layout
+				Reveal.layout();
+			});
+		</script>
+	</body>
+</html>
