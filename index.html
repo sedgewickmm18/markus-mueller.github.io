@@ -388,12 +388,54 @@
 				<!-- ============================================================ -->
 				<section>
 					<h2>Key Takeaways</h2>
-					<ul style="font-size: 0.8em;">
+						<ul style="font-size: 0.8em; line-height: 2.0;">
 						<li class="fragment"><strong>Start with Explicit Prompting</strong> &mdash; it's universal and simple</li>
 						<li class="fragment"><strong>Add Elicitation</strong> when you want fewer round-trips and schema-validated forms</li>
 						<li class="fragment"><strong>Both patterns complement each other</strong> &mdash; use the right tool for the job</li>
 						<li class="fragment"><strong>Safety first:</strong> human-in-the-loop prevents costly mistakes in automated workflows</li>
 					</ul>
+				</section>
+
+				<!-- ============================================================ -->
+				<!-- DEMO SETUP -->
+				<!-- ============================================================ -->
+				<section>
+					<h2>Live Demo Setup</h2>
+					<p style="font-size: 0.65em; color: #777; margin-bottom: 0.8em;">
+						Tool exposed: <code>task_action()</code> &mdash; no required parameters
+					</p>
+
+					<h3 style="margin-top: 0.5em;">Demo 1 &mdash; Cloud LLM <span style="font-size: 0.8em; color: #666;">(MCP Client with elicitation support)</span></h3>
+					<div class="mermaid" style="font-size: 0.55em; text-align: center; border: 1px solid #bbb; border-radius: 6px; padding: 0.5em;">
+graph LR
+    LLM1["🤖 Claude Haiku\nLLM"]:::llm
+    Client1["💬 MCPJam\nMCP Client"]:::client
+    Server1["🔧 Data Intelligence\nMCP Server"]:::server
+
+    LLM1 -->|generates tool calls| Client1
+    Client1 -->|task_action| Server1
+    Server1 -->|elicitation / response| Client1
+
+    classDef llm fill:#E1D5E7,stroke:#9673a6,color:#333
+    classDef client fill:#DAE8FC,stroke:#6c8ebf,color:#333
+    classDef server fill:#D5E8D4,stroke:#82b366,color:#333
+					</div>
+
+					<h3 style="margin-top: 2em;">Demo 2 &mdash; Local LLM <span style="font-size: 0.8em; color: #666;">(MCP Client without elicitation support)</span></h3>
+					<div class="mermaid" style="font-size: 0.55em; text-align: center; border: 1px solid #bbb; border-radius: 6px; padding: 0.5em;">
+graph LR
+    LLM2["🤖 Qwen3-Coder-Next\nLocal LLM"]:::llm
+    Client2["💬 Jan.ai\nMCP Client"]:::client
+    Server2["🔧 Data Intelligence\nMCP Server"]:::server
+
+    LLM2 -->|generates tool calls| Client2
+    Client2 -->|task_action| Server2
+    Server2 -->|error / response| Client2
+
+    classDef llm fill:#E1D5E7,stroke:#9673a6,color:#333
+    classDef client fill:#DAE8FC,stroke:#6c8ebf,color:#333
+    classDef server fill:#D5E8D4,stroke:#82b366,color:#333
+					</div>
 				</section>
 
 				<!-- ============================================================ -->
