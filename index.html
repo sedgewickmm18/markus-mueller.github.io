@@ -82,11 +82,11 @@
 					<h2>Why Do We Need Human Input?</h2>
 					<div class="callout">
 						<strong>Scenario:</strong> An AI assistant is asked to<br>
-						<code>"Clean up old branches in the repository"</code><br><br>
-						Before deleting anything, it needs to know:<br>
-						&bull; <strong>Which branches?</strong> &mdash; merged only, or stale too?<br>
-						&bull; <strong>How old is "old"?</strong> &mdash; 30 days? 90 days?<br>
-						&bull; <strong>Confirmation</strong> &mdash; some branches may still be in use
+						<code>"Complete the deployment review task"</code><br><br>
+						Before acting, it needs to know:<br>
+						&bull; <strong>Action</strong> &mdash; approve or reject?<br>
+						&bull; <strong>Comment</strong> &mdash; a mandatory justification<br>
+						&bull; <strong>Confirmation</strong> &mdash; the action is irreversible once submitted
 					</div>
 					<p class="fragment" style="font-size: 0.8em;">
 						Without human input, the tool either <span class="red">guesses wrong</span>
@@ -118,13 +118,13 @@
 							</tr>
 							<tr>
 								<td><strong>Pattern</strong></td>
-								<td>Server returns options → user picks</td>
-								<td>Server pauses → asks for input</td>
+								<td>Server returns error → user provides params → retry</td>
+								<td>Server pauses → asks for input via modal</td>
 							</tr>
 							<tr>
 								<td><strong>UX</strong></td>
-								<td>List / Menu selection</td>
-								<td>Modal / Dynamic form</td>
+								<td>Error message → form → second call</td>
+								<td>Dynamic modal / form</td>
 							</tr>
 						</tbody>
 					</table>
@@ -142,44 +142,83 @@
 						<h2><span style="color: #4FC3F7;">1.</span> Explicit Prompting</h2>
 						<p><em>User-Initiated Control</em></p>
 						<p style="font-size: 0.8em;">
-							The server returns <strong>broad results</strong>; the user decides
-							how to narrow them down.
+							The client calls the tool without parameters; the server
+							returns an <strong>error message</strong> explaining what is needed.
+							The user provides the missing data and the client <strong>retries</strong>.
 						</p>
 						<p style="font-size: 0.7em; margin-top: 1em;">
 							&darr; See it in action
 						</p>
 					</section>
 
-					<!-- Example: List PRs -->
+					<!-- Example: Task Action -->
 					<section>
-						<h3>Example: Reviewing Pull Requests</h3>
+						<h3>Example: Completing a Workflow Task</h3>
 						<div class="scenario-box">
-							<strong>User says:</strong> <code>"Show me the open PRs"</code><br><br>
-							<strong>Tool call:</strong><br>
+							<strong>User says:</strong> <code>"Complete the deployment review"</code><br><br>
+							<strong>1st tool call (no parameters):</strong><br>
 							<pre><code class="hljs json" data-trim style="font-size: 0.65em;">
 {
   "method": "tools/call",
   "params": {
-    "name": "list_pull_requests",
-    "arguments": { "state": "open" }
+    "name": "task_action",
+    "arguments": {}
   }
 }
 							</code></pre>
-							<strong>Server returns all open PRs:</strong><br>
+							<strong>Server returns an error:</strong><br>
 							<pre><code class="hljs json" data-trim style="font-size: 0.65em;">
 {
+  "isError": true,
   "content": [
-    { "id": 101, "title": "Fix login bug", "author": "alice" },
-    { "id": 102, "title": "Add dark mode",  "author": "bob"   },
-    { "id": 103, "title": "Update README",  "author": "carol" }
+    {
+      "type": "text",
+      "text": "Missing required parameters.
+               Please provide 'action' (approve|reject)
+               and 'comment' (mandatory justification)."
+    }
   ]
 }
 							</code></pre>
-							<strong>Client renders list &rarr; User clicks PR #101</strong>
+							<strong>Client shows form &rarr; User selects action & enters comment</strong>
+						</div>
+						<p style="font-size: 0.7em; margin-top: 0.5em;">
+							<span class="green">&#10003;</span> Works with <strong>any</strong> MCP client
+						</p>
+					</section>
+
+					<!-- Second Call -->
+					<section>
+						<h3>Explicit Prompting &mdash; Retry with Parameters</h3>
+						<div class="scenario-box">
+							<strong>2nd tool call (with user-provided data):</strong><br>
+							<pre><code class="hljs json" data-trim style="font-size: 0.65em;">
+{
+  "method": "tools/call",
+  "params": {
+    "name": "task_action",
+    "arguments": {
+      "action": "approve",
+      "comment": "All tests passed, ready for production"
+    }
+  }
+}
+							</code></pre>
+							<strong>Server returns success:</strong><br>
+							<pre><code class="hljs json" data-trim style="font-size: 0.65em;">
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "Task completed: deployment review approved."
+    }
+  ]
+}
+							</code></pre>
 						</div>
 						<p style="font-size: 0.7em;">
 							<span class="green">&#10003;</span> Zero ambiguity &bull;
-							<span class="green">&#10003;</span> Works with <strong>any</strong> MCP client
+							<span class="green">&#10003;</span> User stays in control
 						</p>
 					</section>
 
@@ -187,11 +226,11 @@
 					<section>
 						<h3>Explicit Prompting &mdash; Key Points</h3>
 						<ul style="font-size: 0.8em;">
-							<li><strong>Use cases:</strong> selecting files, picking branches, choosing team members</li>
-							<li><strong>Workflow:</strong> Server lists all options &rarr; Client renders UI &rarr; User selects</li>
+							<li><strong>Use cases:</strong> approving tasks, submitting reviews, completing workflow steps</li>
+							<li><strong>Workflow:</strong> Call without params &rarr; Error with guidance &rarr; User provides data &rarr; Retry with params</li>
 							<li><strong>Decision responsibility:</strong> lies with the <em>client/user</em>, not the model</li>
-							<li><strong>Advantage:</strong> Universal compatibility &mdash; every MCP client can render a list</li>
-							<li><strong>Limitation:</strong> Cannot prompt for data the server hasn't thought of in advance</li>
+							<li><strong>Advantage:</strong> Universal compatibility &mdash; every MCP client can display an error</li>
+							<li><strong>Limitation:</strong> Requires two round-trips; client must parse the error message</li>
 						</ul>
 					</section>
 				</section>
@@ -206,25 +245,25 @@
 						<p><em>Server-Initiated Pausing</em></p>
 						<p style="font-size: 0.8em;">
 							The server <strong>pauses execution</strong> to request missing
-							parameters or user approvals via a JSON Schema form.
+							parameters via a JSON Schema form &mdash; no error, no retry needed.
 						</p>
 						<p style="font-size: 0.7em; margin-top: 1em;">
-							&darr; See meaningful examples
+							&darr; See it in action
 						</p>
 					</section>
 
-					<!-- Example 1: Delete Confirmation -->
+					<!-- Example: Task Action with Elicitation -->
 					<section>
-						<h3>Example 1: Destructive Action Confirmation</h3>
+						<h3>Example: Completing a Workflow Task</h3>
 						<div class="scenario-box">
-							<strong>User says:</strong> <code>"Delete the staging database"</code><br><br>
-							<strong>Tool call:</strong><br>
+							<strong>User says:</strong> <code>"Complete the deployment review"</code><br><br>
+							<strong>Tool call (no parameters):</strong><br>
 							<pre><code class="hljs json" data-trim style="font-size: 0.65em;">
 {
   "method": "tools/call",
   "params": {
-    "name": "delete_database",
-    "arguments": { "environment": "staging" }
+    "name": "task_action",
+    "arguments": {}
   }
 }
 							</code></pre>
@@ -232,64 +271,26 @@
 							<pre><code class="hljs json" data-trim style="font-size: 0.65em;">
 {
   "type": "elicitation",
-  "title": "Confirm Database Deletion",
-  "message": "This will permanently delete the staging database.",
+  "title": "Complete Workflow Task",
+  "message": "Please choose an action and provide a comment.",
   "requestedSchema": {
     "type": "object",
     "properties": {
-      "confirm": {
-        "type": "boolean",
-        "description": "Type 'yes' to confirm"
-      }
-    },
-    "required": ["confirm"]
-  }
-}
-							</code></pre>
-							<strong>Client shows modal &rarr; User clicks "Confirm"</strong>
-						</div>
-					</section>
-
-					<!-- Example 2: Missing Parameter -->
-					<section>
-						<h3>Example 2: Missing Required Parameter</h3>
-						<div class="scenario-box">
-							<strong>User says:</strong> <code>"Deploy to production"</code><br><br>
-							<strong>Tool call:</strong><br>
-							<pre><code class="hljs json" data-trim style="font-size: 0.65em;">
-{
-  "method": "tools/call",
-  "params": {
-    "name": "deploy",
-    "arguments": { "target": "production" }
-  }
-}
-							</code></pre>
-							<strong>Server needs the branch name & asks via elicitation:</strong><br>
-							<pre><code class="hljs json" data-trim style="font-size: 0.65em;">
-{
-  "type": "elicitation",
-  "title": "Deployment Details",
-  "message": "Which branch should be deployed?",
-  "requestedSchema": {
-    "type": "object",
-    "properties": {
-      "branch": {
+      "action": {
         "type": "string",
-        "enum": ["main", "release/v2.1", "hotfix/auth-fix"],
-        "description": "Select branch to deploy"
+        "enum": ["approve", "reject"],
+        "description": "Select action"
       },
-      "rollback_on_failure": {
-        "type": "boolean",
-        "default": true,
-        "description": "Auto-rollback on failure?"
+      "comment": {
+        "type": "string",
+        "description": "Mandatory justification"
       }
     },
-    "required": ["branch"]
+    "required": ["action", "comment"]
   }
 }
 							</code></pre>
-							<strong>Client renders form &rarr; User selects branch & confirms</strong>
+							<strong>Client renders form &rarr; User selects action, enters comment & confirms</strong>
 						</div>
 					</section>
 
@@ -297,10 +298,10 @@
 					<section>
 						<h3>Elicitation &mdash; Key Points</h3>
 						<ul style="font-size: 0.8em;">
-							<li><strong>Use cases:</strong> confirming deletes, requesting branch names, entering API keys, approval workflows</li>
-							<li><strong>Workflow:</strong> Server identifies missing data &rarr; Sends JSON Schema &rarr; Client renders form &rarr; User fills in</li>
+							<li><strong>Use cases:</strong> approval workflows, review submissions, task completion, confirmation dialogs</li>
+							<li><strong>Workflow:</strong> Call without params &rarr; Server sends JSON Schema &rarr; Client renders form &rarr; User fills in &rarr; Single round-trip</li>
 							<li><strong>Decision responsibility:</strong> Server manages state; user provides validation</li>
-							<li><strong>Advantage:</strong> Maintains context in complex multi-step workflows</li>
+							<li><strong>Advantage:</strong> No retry needed &mdash; the server holds context and waits</li>
 							<li><strong>Schema-driven:</strong> Supports text, boolean, enum, and nested objects</li>
 						</ul>
 					</section>
@@ -340,18 +341,18 @@
 						<tbody>
 							<tr>
 								<td><strong>Trigger</strong></td>
-								<td class="pro">User / Client initiates</td>
-								<td class="pro">Server initiates when needed</td>
+								<td class="pro">Client detects error & prompts user</td>
+								<td class="pro">Server initiates when params are missing</td>
 							</tr>
 							<tr>
 								<td><strong>UX Pattern</strong></td>
-								<td class="pro">List / Menu selection</td>
-								<td class="pro">Modal / Dynamic form</td>
+								<td class="pro">Error message → form → retry</td>
+								<td class="pro">Direct modal / dynamic form</td>
 							</tr>
 							<tr>
 								<td><strong>Ambiguity</strong></td>
-								<td class="pro">Low &mdash; user sees all options</td>
-								<td class="pro">Low &mdash; schema constrains input</td>
+								<td class="pro">Low — error message explains what's needed</td>
+								<td class="pro">Low — schema constrains input</td>
 							</tr>
 							<tr>
 								<td><strong>Client Compat.</strong></td>
@@ -359,24 +360,24 @@
 								<td class="con">Requires elicitation-capable client</td>
 							</tr>
 							<tr>
-								<td><strong>Multi-step Flows</strong></td>
-								<td class="con">User must drive each step</td>
-								<td class="pro">Server orchestrates automatically</td>
+								<td><strong>Round-trips</strong></td>
+								<td class="con">Two calls (error + retry)</td>
+								<td class="pro">Single call (server waits)</td>
 							</tr>
 							<tr>
 								<td><strong>Flexibility</strong></td>
-								<td class="con">Limited to pre-defined options</td>
-								<td class="pro">Schema allows rich input types</td>
+								<td class="con">Error message is free-form text</td>
+								<td class="pro">Schema allows rich, validated input types</td>
 							</tr>
 							<tr>
 								<td><strong>Implementation</strong></td>
-								<td class="pro">Simple &mdash; just return data</td>
-								<td class="con">More complex server-side state</td>
+								<td class="pro">Simple — return error, then accept params</td>
+								<td class="con">More complex server-side state management</td>
 							</tr>
 							<tr>
 								<td><strong>Safety</strong></td>
-								<td class="pro">User explicitly chooses</td>
-								<td class="pro">Server enforces confirmation</td>
+								<td class="pro">User explicitly provides all data</td>
+								<td class="pro">Server enforces schema validation</td>
 							</tr>
 						</tbody>
 					</table>
@@ -389,9 +390,9 @@
 					<h2>Key Takeaways</h2>
 					<ul style="font-size: 0.8em;">
 						<li class="fragment"><strong>Start with Explicit Prompting</strong> &mdash; it's universal and simple</li>
-						<li class="fragment"><strong>Add Elicitation</strong> when you need dynamic forms, confirmations, or multi-step workflows</li>
+						<li class="fragment"><strong>Add Elicitation</strong> when you want fewer round-trips and schema-validated forms</li>
 						<li class="fragment"><strong>Both patterns complement each other</strong> &mdash; use the right tool for the job</li>
-						<li class="fragment"><strong>Safety first:</strong> human-in-the-loop prevents costly mistakes in automated tool chains</li>
+						<li class="fragment"><strong>Safety first:</strong> human-in-the-loop prevents costly mistakes in automated workflows</li>
 					</ul>
 				</section>
 
@@ -417,13 +418,13 @@ sequenceDiagram
     participant S as MCP Server
 
     Note over U,S: Method 1: Explicit Prompting
-    U->>C: "List open PRs"
-    C->>S: list_pull_requests(state="open")
-    S-->>C: Returns all PRs [{id: 101, ...}, ...]
-    C->>U: Renders list for selection
-    U->>C: Selects PR #101
-    C->>S: get_pull_request(id=101)
-    S-->>C: Returns PR details
+    U->>C: "Complete the deployment review"
+    C->>S: task_action(arguments={})
+    S-->>C: Error: "Missing action and comment"
+    C->>U: Shows form for action + comment
+    U->>C: action="approve", comment="..."
+    C->>S: task_action(action, comment)
+    S-->>C: Success: "Task completed"
 						</div>
 					</section>
 
@@ -437,13 +438,13 @@ sequenceDiagram
     participant S as MCP Server
 
     Note over U,S: Method 2: MCP Elicitation
-    U->>C: "Delete staging database"
-    C->>S: delete_database(env="staging")
+    U->>C: "Complete the deployment review"
+    C->>S: task_action(arguments={})
     S-->>C: Elicitation Request (JSON Schema)
-    C->>U: Shows modal: "Confirm Deletion?"
-    U->>C: Confirms
+    C->>U: Shows modal: action + comment
+    U->>C: Approve + "All tests passed"
     C->>S: Submit elicitation response
-    S-->>C: Returns success / error
+    S-->>C: Success: "Task completed"
 						</div>
 					</section>
 				</section>
