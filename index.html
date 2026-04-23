@@ -8,8 +8,8 @@
 
 		<link rel="stylesheet" href="dist/reset.css" />
 		<link rel="stylesheet" href="dist/reveal.css" />
-		<link rel="stylesheet" href="dist/theme/black.css" id="theme" />
-		<link rel="stylesheet" href="dist/plugin/highlight/monokai.css" />
+		<link rel="stylesheet" href="dist/theme/beige.css" id="theme" />
+		<link rel="stylesheet" href="dist/plugin/highlight/zenburn.css" />
 
 		<style>
 			.reveal section img.emoji {
@@ -28,19 +28,19 @@
 				font-size: 0.75em;
 			}
 			.reveal .pros-cons tr:nth-child(odd) {
-				background: rgba(255,255,255,0.05);
+				background: rgba(0,0,0,0.04);
 			}
 			.reveal .callout {
-				background: rgba(255, 165, 0, 0.15);
-				border-left: 4px solid orange;
+				background: rgba(255, 165, 0, 0.12);
+				border-left: 4px solid #d97706;
 				padding: 0.8em 1em;
 				margin: 1em 0;
 				text-align: left;
 				font-size: 0.8em;
 			}
 			.reveal .scenario-box {
-				background: rgba(100, 200, 255, 0.1);
-				border: 1px solid rgba(100, 200, 255, 0.3);
+				background: rgba(100, 200, 255, 0.15);
+				border: 1px solid rgba(0, 100, 200, 0.25);
 				border-radius: 8px;
 				padding: 1em 1.2em;
 				margin: 0.8em 0;
@@ -49,6 +49,11 @@
 			}
 			.reveal .green { color: #4CAF50; }
 			.reveal .red { color: #f44336; }
+			.reveal h1 { font-size: 1.5em; text-transform: none; }
+			.reveal h2 { font-size: 1.1em; text-transform: none; letter-spacing: 0; }
+			.reveal h3 { font-size: 0.9em; text-transform: none; letter-spacing: 0; }
+			.reveal .pros-cons td.pro { background: rgba(76, 175, 80, 0.15); }
+			.reveal .pros-cons td.con { background: rgba(244, 67, 54, 0.15); }
 		</style>
 	</head>
 
@@ -65,7 +70,7 @@
 					<p style="margin-top: 1.5em;">
 						<em>When tools need additional information from the user</em>
 					</p>
-					<p style="margin-top: 2em; font-size: 0.6em; color: #888;">
+					<p style="margin-top: 2em; font-size: 0.6em; color: #666;">
 						Model Context Protocol &mdash; Architectural Patterns for User Intervention
 					</p>
 				</section>
@@ -123,7 +128,7 @@
 							</tr>
 						</tbody>
 					</table>
-					<p style="font-size: 0.65em; margin-top: 1.5em; color: #999;">
+					<p style="font-size: 0.65em; margin-top: 1.5em; color: #777;">
 						Use the arrow keys to navigate. Down arrows dive into details.
 					</p>
 				</section>
@@ -313,7 +318,7 @@
 							<li>MCPJam</li>
 							<li>Goose</li>
 						</ul>
-						<p style="font-size: 0.65em; color: #999; margin-top: 1em;">
+						<p style="font-size: 0.65em; color: #777; margin-top: 1em;">
 							Explicit Prompting works with <strong>all</strong> MCP clients by contrast.
 						</p>
 					</section>
@@ -335,43 +340,43 @@
 						<tbody>
 							<tr>
 								<td><strong>Trigger</strong></td>
-								<td><span class="green">+</span> User / Client initiates</td>
-								<td><span class="green">+</span> Server initiates when needed</td>
+								<td class="pro">User / Client initiates</td>
+								<td class="pro">Server initiates when needed</td>
 							</tr>
 							<tr>
 								<td><strong>UX Pattern</strong></td>
-								<td><span class="green">+</span> List / Menu selection</td>
-								<td><span class="green">+</span> Modal / Dynamic form</td>
+								<td class="pro">List / Menu selection</td>
+								<td class="pro">Modal / Dynamic form</td>
 							</tr>
 							<tr>
 								<td><strong>Ambiguity</strong></td>
-								<td><span class="green">+</span> Low &mdash; user sees all options</td>
-								<td><span class="green">+</span> Low &mdash; schema constrains input</td>
+								<td class="pro">Low &mdash; user sees all options</td>
+								<td class="pro">Low &mdash; schema constrains input</td>
 							</tr>
 							<tr>
 								<td><strong>Client Compat.</strong></td>
-								<td><span class="green">+</span> Works with <em>every</em> MCP client</td>
-								<td><span class="red">&ndash;</span> Requires elicitation-capable client</td>
+								<td class="pro">Works with <em>every</em> MCP client</td>
+								<td class="con">Requires elicitation-capable client</td>
 							</tr>
 							<tr>
 								<td><strong>Multi-step Flows</strong></td>
-								<td><span class="red">&ndash;</span> User must drive each step</td>
-								<td><span class="green">+</span> Server orchestrates automatically</td>
+								<td class="con">User must drive each step</td>
+								<td class="pro">Server orchestrates automatically</td>
 							</tr>
 							<tr>
 								<td><strong>Flexibility</strong></td>
-								<td><span class="red">&ndash;</span> Limited to pre-defined options</td>
-								<td><span class="green">+</span> Schema allows rich input types</td>
+								<td class="con">Limited to pre-defined options</td>
+								<td class="pro">Schema allows rich input types</td>
 							</tr>
 							<tr>
 								<td><strong>Implementation</strong></td>
-								<td><span class="green">+</span> Simple &mdash; just return data</td>
-								<td><span class="red">&ndash;</span> More complex server-side state</td>
+								<td class="pro">Simple &mdash; just return data</td>
+								<td class="con">More complex server-side state</td>
 							</tr>
 							<tr>
 								<td><strong>Safety</strong></td>
-								<td><span class="green">+</span> User explicitly chooses</td>
-								<td><span class="green">+</span> Server enforces confirmation</td>
+								<td class="pro">User explicitly chooses</td>
+								<td class="pro">Server enforces confirmation</td>
 							</tr>
 						</tbody>
 					</table>
@@ -397,7 +402,7 @@
 					<section>
 						<h2>Appendix</h2>
 						<p style="font-size: 0.8em;">Workflow Sequence Diagrams</p>
-						<p style="font-size: 0.65em; margin-top: 1em; color: #999;">
+						<p style="font-size: 0.65em; margin-top: 1em; color: #777;">
 							&darr; Navigate down for individual diagrams
 						</p>
 					</section>
@@ -453,7 +458,7 @@ sequenceDiagram
 			// Initialize Mermaid before Reveal.js so diagrams render correctly
 			mermaid.initialize({
 				startOnLoad: false,
-				theme: 'dark',
+				theme: 'default',
 				themeVariables: {
 					fontSize: '16px'
 				},
@@ -464,6 +469,8 @@ sequenceDiagram
 			});
 
 			Reveal.initialize({
+				width: 2080,
+				height: 1280,
 				controls: true,
 				progress: true,
 				center: true,
