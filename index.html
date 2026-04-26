@@ -384,24 +384,11 @@
 				</section>
 
 				<!-- ============================================================ -->
-				<!-- CONCLUSION -->
-				<!-- ============================================================ -->
-				<section>
-					<h2>Key Takeaways</h2>
-						<ul style="font-size: 0.8em; line-height: 2.0;">
-						<li class="fragment"><strong>Start with Explicit Prompting</strong> &mdash; it's universal and simple</li>
-						<li class="fragment"><strong>Add Elicitation</strong> when you want fewer round-trips and schema-validated forms</li>
-						<li class="fragment"><strong>Both patterns complement each other</strong> &mdash; use the right tool for the job</li>
-						<li class="fragment"><strong>Safety first:</strong> human-in-the-loop prevents costly mistakes in automated workflows</li>
-					</ul>
-				</section>
-
-				<!-- ============================================================ -->
 				<!-- DEMO SETUP -->
 				<!-- ============================================================ -->
 				<section>
-					<h2>Live Demo Setup</h2>
-					<p style="font-size: 0.65em; color: #777; margin-bottom: 0.8em;">
+					<h2>Showcase Setup</h2>
+					<p style="font-size: 0.65em; color: #777; margin-bottom: 3.8em;">
 						Tool exposed: <code>task_action()</code> &mdash; no required parameters
 					</p>
 
@@ -436,6 +423,56 @@ graph LR
     classDef client fill:#DAE8FC,stroke:#6c8ebf,color:#333
     classDef server fill:#D5E8D4,stroke:#82b366,color:#333
 					</div>
+				</section>
+
+				<!-- ============================================================ -->
+				<!-- DEMO CONTENT -->
+				<!-- ============================================================ -->
+				<section>
+					<h2>Showcase Scenario</h2>
+					<p style="font-size: 0.7em; color: #777; margin-bottom: 0.5em;">
+						Workflow task handling &mdash; inbox state transitions
+					</p>
+					<div class="mermaid" style="font-size: 0.5em; text-align: center; border: 1px solid #bbb; border-radius: 6px; padding: 0.5em;">
+%%{init: {'themeVariables': { 'nodeSpacing': 80, 'rankSpacing': 150 }}}%%
+flowchart LR
+    A["📥 2 unclaimed tasks:\n · Approval ⏳\n · Review ⏳"]:::inbox
+    B["📥 1 claimed + 1 open:\n · Approval ✋\n · Review ⏳"]:::inbox
+    D["📥 1 open task:\n · Review ⏳"]:::inbox
+    C["📥 1 claimed task:\n · Review ✋"]:::inbox
+
+    A -->|"① Claim Approval"| B
+    B -->|"② Complete → Reject"| D
+    D -->|"③ Claim Review"| C
+    C ==>|"④ sendForApproval\n🔄 Cycle repeats!"| A
+
+    A ~~~ C
+    A ~~~ C
+    A ~~~ C
+
+    classDef inbox fill:#DAE8FC,stroke:#6c8ebf,color:#333
+
+					</div>
+				</section>
+
+				<!-- ============================================================ -->
+				<!-- LIVE -->
+				<!-- ============================================================ -->
+				<section data-background-color="#222">
+					<h2 style="color: #fff;">Live</h2>
+				</section>
+
+				<!-- ============================================================ -->
+				<!-- CONCLUSION -->
+				<!-- ============================================================ -->
+				<section>
+					<h2>Key Takeaways</h2>
+						<ul style="font-size: 0.8em; line-height: 2.0;">
+						<li class="fragment"><strong>Start with Explicit Prompting</strong> &mdash; it's universal and simple</li>
+						<li class="fragment"><strong>Add Elicitation</strong> when you want fewer round-trips and schema-validated forms</li>
+						<li class="fragment"><strong>Both patterns complement each other</strong> &mdash; use the right tool for the job</li>
+						<li class="fragment"><strong>Safety first:</strong> human-in-the-loop prevents costly mistakes in automated workflows</li>
+					</ul>
 				</section>
 
 				<!-- ============================================================ -->
