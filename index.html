@@ -73,6 +73,9 @@
 					<p style="margin-top: 2em; font-size: 0.6em; color: #666;">
 						Model Context Protocol &mdash; Architectural Patterns for User Intervention
 					</p>
+					<p style="font-size: 0.35em; color: #999; margin-top: 1.5em; text-align: center;">
+						https://sedgewickmm18.github.io/markus-mueller.github.io/
+					</p>
 				</section>
 
 				<!-- ============================================================ -->
@@ -94,6 +97,9 @@
 					</p>
 					<p class="fragment" style="font-size: 0.8em;">
 						MCP provides <strong>two patterns</strong> to solve this.
+					</p>
+					<p style="font-size: 0.35em; color: #999; margin-top: 1.5em; text-align: center;">
+						https://sedgewickmm18.github.io/markus-mueller.github.io/
 					</p>
 				</section>
 
@@ -388,41 +394,22 @@
 				<!-- ============================================================ -->
 				<section>
 					<h2>Showcase Setup</h2>
-					<p style="font-size: 0.65em; color: #777; margin-bottom: 3.8em;">
-						Tool exposed: <code>task_action()</code> &mdash; no required parameters
+					<div style="display: flex; align-items: flex-start; gap: 2em; margin-top: 1em;">
+						<div style="flex: 1.2; text-align: center;">
+							<img src="./Setup.drawio.png" style="max-width: 100%; height: auto; border: 1px solid #bbb; border-radius: 6px;" />
+						</div>
+						<div style="flex: 0.8; text-align: left; padding-top: 0.5em;">
+							<h3>Scenario 1</h3>
+							<p style="font-size: 0.8em;">MCP client supporting elicitation</p>
+							<h3 style="margin-top: 1.2em;">Scenario 2</h3>
+							<p style="font-size: 0.8em;">Tables, deep dive etc.</p>
+							<h3 style="margin-top: 1.2em;">Scenario 3</h3>
+							<p style="font-size: 0.8em;">MCP client without elicitation &mdash; if time permits</p>
+						</div>
+					</div>
+					<p style="font-size: 0.35em; color: #999; margin-top: 1.5em; text-align: center;">
+						https://sedgewickmm18.github.io/markus-mueller.github.io/
 					</p>
-
-					<h3 style="margin-top: 0.5em;">Demo 1 &mdash; Cloud LLM <span style="font-size: 0.8em; color: #666;">(MCP Client with elicitation support)</span></h3>
-					<div class="mermaid" style="font-size: 0.55em; text-align: center; border: 1px solid #bbb; border-radius: 6px; padding: 0.5em;">
-graph LR
-    LLM1["🤖 Claude Haiku\nLLM"]:::llm
-    Client1["💬 MCPJam\nMCP Client"]:::client
-    Server1["🔧 Data Intelligence\nMCP Server"]:::server
-
-    LLM1 -->|generates tool calls| Client1
-    Client1 -->|task_action| Server1
-    Server1 -->|elicitation / response| Client1
-
-    classDef llm fill:#E1D5E7,stroke:#9673a6,color:#333
-    classDef client fill:#DAE8FC,stroke:#6c8ebf,color:#333
-    classDef server fill:#D5E8D4,stroke:#82b366,color:#333
-					</div>
-
-					<h3 style="margin-top: 2em;">Demo 2 &mdash; Local LLM <span style="font-size: 0.8em; color: #666;">(MCP Client without elicitation support)</span></h3>
-					<div class="mermaid" style="font-size: 0.55em; text-align: center; border: 1px solid #bbb; border-radius: 6px; padding: 0.5em;">
-graph LR
-    LLM2["🤖 Qwen3-Coder-Next\nLocal LLM"]:::llm
-    Client2["💬 Jan.ai\nMCP Client"]:::client
-    Server2["🔧 Data Intelligence\nMCP Server"]:::server
-
-    LLM2 -->|generates tool calls| Client2
-    Client2 -->|task_action| Server2
-    Server2 -->|error / response| Client2
-
-    classDef llm fill:#E1D5E7,stroke:#9673a6,color:#333
-    classDef client fill:#DAE8FC,stroke:#6c8ebf,color:#333
-    classDef server fill:#D5E8D4,stroke:#82b366,color:#333
-					</div>
 				</section>
 
 				<!-- ============================================================ -->
@@ -453,6 +440,9 @@ flowchart LR
     classDef inbox fill:#DAE8FC,stroke:#6c8ebf,color:#333
 
 					</div>
+					<p style="font-size: 0.35em; color: #999; margin-top: 1.5em; text-align: center;">
+						https://sedgewickmm18.github.io/markus-mueller.github.io/
+					</p>
 				</section>
 
 				<!-- ============================================================ -->
@@ -473,6 +463,9 @@ flowchart LR
 						<li class="fragment"><strong>Both patterns complement each other</strong> &mdash; use the right tool for the job</li>
 						<li class="fragment"><strong>Safety first:</strong> human-in-the-loop prevents costly mistakes in automated workflows</li>
 					</ul>
+					<p style="font-size: 0.35em; color: #999; margin-top: 1.5em; text-align: center;">
+						https://sedgewickmm18.github.io/markus-mueller.github.io/
+					</p>
 				</section>
 
 				<!-- ============================================================ -->
@@ -485,6 +478,9 @@ flowchart LR
 						<p style="font-size: 0.65em; margin-top: 1em; color: #777;">
 							&darr; Navigate down for individual diagrams
 						</p>
+					<p style="font-size: 0.35em; color: #999; margin-top: 1.5em; text-align: center;">
+						https://sedgewickmm18.github.io/markus-mueller.github.io/
+					</p>
 					</section>
 
 					<!-- Diagram 1: Explicit Prompting -->
@@ -505,6 +501,9 @@ sequenceDiagram
     C->>S: task_action(action, comment)
     S-->>C: Success: "Task completed"
 						</div>
+					<p style="font-size: 0.35em; color: #999; margin-top: 1.5em; text-align: center;">
+						https://sedgewickmm18.github.io/markus-mueller.github.io/
+					</p>
 					</section>
 
 					<!-- Diagram 2: MCP Elicitation -->
@@ -525,6 +524,9 @@ sequenceDiagram
     C->>S: Submit elicitation response
     S-->>C: Success: "Task completed"
 						</div>
+					<p style="font-size: 0.35em; color: #999; margin-top: 1.5em; text-align: center;">
+						https://sedgewickmm18.github.io/markus-mueller.github.io/
+					</p>
 					</section>
 				</section>
 
